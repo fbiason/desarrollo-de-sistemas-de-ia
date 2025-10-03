@@ -1,0 +1,78 @@
+/* Estilos adicionales para el sistema experto */
+
+.header {
+    padding: 2rem 0;
+    background-color: #f1f8ff;
+    border-bottom: 1px solid #e3f2fd;
+}
+
+.card {
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+.result-card {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.result-card.show {
+    opacity: 1;
+}
+
+.cause-server {
+    color: #dc3545;
+}
+
+.cause-browser {
+    color: #fd7e14;
+}
+
+.cause-user {
+    color: #0d6efd;
+}
+
+.cause-unknown {
+    color: #6c757d;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .col-md-6.offset-md-3 {
+        padding: 0 15px;
+    }
+}
+
+/* Custom animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Footer styles */
+.footer {
+    margin-top: 3rem;
+    padding: 1rem 0;
+    background-color: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
