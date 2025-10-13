@@ -18,7 +18,7 @@ class SystemInfo(Fact):
 class ServerStatus(Fact):
     """Information about the server status."""
     is_online = Field(bool, default=True)
-    response_time = Field(float, default=None)  # in milliseconds
+    response_time = Field(int, default=None)  # in milliseconds
     last_maintenance = Field(str, default=None)  # date of last maintenance
     reported_issues = Field(int, default=0)  # number of reported issues
     
