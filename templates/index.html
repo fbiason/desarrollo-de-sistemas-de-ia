@@ -328,13 +328,17 @@
 
         // Función para obtener texto descriptivo de la causa
         function getCauseText(cause) {
-            const causes = {
-                'server': 'Problema del servidor',
-                'browser': 'Problema del navegador',
-                'user': 'Problema del usuario o de configuración',
-                'unknown': 'Causa desconocida'
-            };
-            return causes[cause] || 'Causa no identificada';
+        const causes = {
+            server:      'Problema del servidor',
+            browser:     'Problema del navegador',
+            user:        'Problema del usuario o de configuración',
+            link:        'Problema con el enlace',
+            network:     'Problema de la red/conectividad',
+            device:      'Problema del dispositivo/audio',
+            permissions: 'Falta de permisos o rol',
+            unknown:     'Causa desconocida'
+        };
+        return causes[cause] || 'Causa no identificada';
         }
     </script>
 </body>

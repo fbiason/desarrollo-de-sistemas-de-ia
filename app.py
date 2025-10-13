@@ -1,52 +1,64 @@
+import collections
+import collections.abc
+if not hasattr(collections, "Mapping"):
+    collections.Mapping = collections.abc.Mapping
+if not hasattr(collections, "MutableMapping"):
+    collections.MutableMapping = collections.abc.MutableMapping
+if not hasattr(collections, "Sequence"):
+    collections.Sequence = collections.abc.Sequence
+
 from flask import Flask, request, jsonify, render_template
 import logging
-from knowledge_base.expert_system import EdTechExpertSystem
+from services.diagnosis_service import DiagnosisService
 
 app = Flask(__name__)
+logging.basicConfig(level=logging.INFO)
+app.logger.setLevel(logging.INFO)
 
-# Configurar logging
-logging.basicConfig(level=logging.DEBUG)
-app.logger.setLevel(logging.DEBUG)
+VALID_BROWSERS = {"Chrome", "Firefox", "Edge", "Safari", "IE", "Other"}
+VALID_CONNECTIONS = {"wifi", "ethernet", "cellular", "slow_wifi"}
 
-expert_system = EdTechExpertSystem()
-
-@app.route('/')
+@app.route("/")
 def index():
-    """Render the main page of the application."""
-    return render_template('index.html')
+    return render_template("index.html")
 
-@app.route('/api/diagnose', methods=['POST'])
+@app.post("/api/diagnose")
 def diagnose():
-    """API endpoint for diagnosing problems."""
     try:
-        data = request.json
-        if not data:
-            return jsonify({"error": "No data provided"}), 400
-        
-        # Extract problem symptoms from request
-        symptoms = data.get('symptoms', [])
-        if not symptoms:
-            return jsonify({"error": "No symptoms provided"}), 400
-        
-        # Run the expert system with the provided symptoms
-        diagnosis = expert_system.diagnose(data)  # Pasar todo el objeto data
-        
-        return jsonify({
-            "diagnosis": diagnosis.get("diagnosis", "Unknown issue"),
-            "cause": diagnosis.get("cause", "Could not determine cause"),
-            "solution": diagnosis.get("solution", "No solution available"),
-            "confidence": diagnosis.get("confidence", 0)
-        })
-    except Exception as e:
-        app.logger.error(f"Error en diagnóstico: {str(e)}")
-        return jsonify({"error": f"Error en el procesamiento: {str(e)}"}), 500
+        data = request.get_json(silent=True)
+        if not data or "symptoms" not in data:
+            return jsonify({"error": "Debe enviar 'symptoms' y 'system_info'"}), 400
 
-@app.route('/api/symptoms', methods=['GET'])
-def get_symptoms():
-    """Return the list of possible symptoms the system can diagnose."""
-    return jsonify({
-        "symptoms": expert_system.get_available_symptoms()
-    })
+        symptoms = data.get("symptoms")
+        sysinfo = data.get("system_info", {})
+        if not isinstance(symptoms, list) or not symptoms:
+            return jsonify({"error": "'symptoms' debe ser lista no vacía"}), 400
+
+        browser = sysinfo.get("browser")
+        conn = sysinfo.get("connection_type")
+        if browser not in VALID_BROWSERS:
+            return jsonify({"error": f"Navegador inválido: {browser}", "allowed": sorted(VALID_BROWSERS)}), 400
+        if conn not in VALID_CONNECTIONS:
+            return jsonify({"error": f"Conexión inválida: {conn}", "allowed": sorted(VALID_CONNECTIONS)}), 400
+
+        result = DiagnosisService.run(data, persist=True)
+
+        print(result)
+        return jsonify(result), 200
+
+    except Exception as e:
+        app.logger.exception("Error en /api/diagnose")
+        return jsonify({"error": str(e)}), 500
+
+@app.get("/api/diagnosis")
+def get_history():
+    try:
+        diagnosis_history = DiagnosisService.history()
+        return jsonify(diagnosis_history), 200
+    except Exception as e:
+        app.logger.exception("Error al obtener historial")
+        return jsonify({"error": str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)
