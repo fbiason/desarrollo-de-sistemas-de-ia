@@ -25,7 +25,6 @@ Este sistema experto ayuda a detectar y diagnosticar problemas comunes en plataf
 
 ### 1️⃣ Clonar el repositorio
 git clone https://github.com/fbiason/desarrollo-de-sistemas-de-ia.git
-cd desarrollo-de-sistemas-de-ia
 
 ### 2️⃣ Crear un entorno virtual
 
