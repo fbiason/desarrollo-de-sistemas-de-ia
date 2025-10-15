@@ -143,6 +143,11 @@ document.getElementById('diagnosis-form').addEventListener('submit', function(e)
             confidenceBar.style.background = 'linear-gradient(90deg, #06d6a0, #198754)'; // Verde
             document.getElementById('confidence-percentage').className = 'fw-bold text-success';
         }
+        
+        // Actualizar dashboard con el nuevo diagnóstico
+        if (typeof window.updateDashboardWithNewDiagnosis === 'function') {
+            window.updateDashboardWithNewDiagnosis(result);
+        }
     })
     .catch(error => {
         console.error('Error:', error);

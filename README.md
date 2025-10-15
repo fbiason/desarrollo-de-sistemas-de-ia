@@ -6,18 +6,40 @@ Este sistema experto ayuda a detectar y diagnosticar problemas comunes en plataf
 
 ## ✨ Características principales
 
-- 🧩 **Base de conocimiento** con hechos sobre problemas comunes.  
-- ⚙️ **Motor de inferencia** basado en reglas (*rule engine*) para identificar causas probables.  
-- 🌐 **API REST** para integración con otras aplicaciones o sistemas.  
-- 💬 **Interfaz de usuario simple y funcional** para consultas directas.  
+- 🧩 **Base de conocimiento** con hechos sobre problemas comunes  
+- ⚙️ **Motor de inferencia** basado en reglas (*rule engine*) para identificar causas probables  
+- 🌐 **API REST** para integración con otras aplicaciones o sistemas  
+- 💬 **Interfaz de usuario moderna** con dashboard en tiempo real  
+- 📊 **Visualización de estadísticas** con gráficos interactivos  
 
 ---
 
 ## 📦 Requisitos
 
 - Python **3.7+**  
-- Flask  
-- Experta *(motor de reglas basado en CLIPS)*  
+- Flask **2.3.0**  
+- Experta **1.9.4** *(motor de reglas basado en CLIPS)*  
+- Chart.js *(para gráficos en el dashboard)*  
+
+---
+
+## 📂 Estructura del Proyecto
+
+```
+proyecto/
+├── main.py              # Archivo principal con todos los endpoints de la API
+├── modelos.py           # Definición de modelos Pydantic (hechos de entrada)
+├── reglas.py            # Base de conocimiento y motor de inferencia
+├── requirements.txt     # Librerías necesarias
+├── README.md           # Instrucciones de uso
+├── knowledge_base/     # Reglas organizadas por categoría
+│   └── rules/          # LoginRules, VideoRules, ChatRules, ContentRules
+├── services/           # Servicios de diagnóstico e historial
+└── interfaz/           # Carpeta para la interfaz visual
+    ├── static/         # Archivos estáticos (CSS, JS, imágenes)
+    ├── templates/      # Archivos HTML o plantillas Jinja2
+    └── app_visual.py   # Código para lanzar la interfaz conectada al backend
+```
 
 ---
 
@@ -47,32 +69,69 @@ pip install -r requirements.txt
 
 Asegurate de tener el entorno virtual activado.
 
-Ejecutá la app:
+**Opción 1: Ejecutar solo el backend (API)**
+```bash
+python main.py
+```
 
-python app.py
-
+**Opción 2: Ejecutar la interfaz visual completa (recomendado)**
+```bash
+python interfaz/app_visual.py
+```
 
 Abrí tu navegador en:
-👉 http://127.0.0.1:5000
+👉 **http://127.0.0.1:5000**
 
-🚀 Uso
+---
 
-Podés acceder a la interfaz web en
-http://localhost:5000
-o utilizar la API REST en
-http://localhost:5000/api/diagnose.
+## 🚀 Uso
 
-"""
-📂 Estructura del proyecto
-sistema_experto/
-├── app.py                  # Aplicación principal Flask
-├── knowledge_base/
-│   ├── __init__.py
-│   ├── facts.py            # Definición de hechos
-│   └── rules.py            # Reglas del sistema experto
-├── static/                 # Archivos estáticos para la interfaz web
-│   ├── css/
-│   └── js/
-├── templates/              # Plantillas HTML
-└── tests/                  # Pruebas unitarias
-"""
+### Interfaz Web
+Accedé a la interfaz completa con dashboard en:
+- **http://localhost:5000**
+
+### API REST
+Podés usar los siguientes endpoints:
+
+**POST** `/api/diagnose` - Diagnosticar un problema
+```json
+{
+  "symptoms": [{
+    "type": "login",
+    "description": "cannot_login"
+  }],
+  "system_info": {
+    "browser": "Chrome",
+    "connection_type": "wifi"
+  }
+}
+```
+
+**GET** `/api/diagnosis` - Obtener historial de diagnósticos
+
+---
+
+## 📊 Dashboard
+
+El sistema incluye un dashboard interactivo que muestra:
+- 📈 **Estadísticas generales**: Total de diagnósticos, confianza alta/media/baja
+- 📊 **Gráficos**: Problemas por tipo, causas identificadas, confianza promedio
+- 📝 **Historial**: Últimos 10 diagnósticos realizados
+
+---
+
+## 🧪 Pruebas
+
+Para ejecutar las pruebas:
+```bash
+pytest
+```
+
+---
+
+## 📖 Documentación Adicional
+
+Para entender cómo funciona el sistema experto internamente, consultá:
+- **Funcionamiento.md** - Explicación detallada de la arquitectura y motor de inferencia
+
+---
