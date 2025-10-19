@@ -26,19 +26,19 @@ Este sistema experto ayuda a detectar y diagnosticar problemas comunes en plataf
 ## 📂 Estructura del Proyecto
 
 ```
-proyecto/
-├── main.py              # Archivo principal con todos los endpoints de la API
-├── modelos.py           # Definición de modelos Pydantic (hechos de entrada)
-├── reglas.py            # Base de conocimiento y motor de inferencia
-├── requirements.txt     # Librerías necesarias
-├── README.md           # Instrucciones de uso
-├── knowledge_base/     # Reglas organizadas por categoría
-│   └── rules/          # LoginRules, VideoRules, ChatRules, ContentRules
-├── services/           # Servicios de diagnóstico e historial
-└── interfaz/           # Carpeta para la interfaz visual
-    ├── static/         # Archivos estáticos (CSS, JS, imágenes)
-    ├── templates/      # Archivos HTML o plantillas Jinja2
-    └── app_visual.py   # Código para lanzar la interfaz conectada al backend
+PROYECTO/
+├── app.py                # Archivo principal con todos los endpoints de la API
+├── requirements.txt      # Librerías necesarias para ejecutar el proyecto
+├── README.md             # Instrucciones de uso y configuración
+├── Funcionamiento.md     # Explicación detallada del flujo interno del sistema
+├── data/                 # Datos de entrada, bases de conocimiento o registros auxiliares
+├── knowledge_base/       # Reglas organizadas por categoría (login, video, chat, contenido)
+├── services/             # Servicios de diagnóstico e historial 
+├── static/               # Archivos estáticos (CSS, JS, imágenes)
+├── templates/            # Archivos HTML o plantillas Jinja2
+└── .gitignore            # Exclusiones de control de versiones
+
+    
 ```
 
 ---
@@ -71,12 +71,7 @@ Asegurate de tener el entorno virtual activado.
 
 **Opción 1: Ejecutar solo el backend (API)**
 ```bash
-python main.py
-```
-
-**Opción 2: Ejecutar la interfaz visual completa (recomendado)**
-```bash
-python interfaz/app_visual.py
+python app.py
 ```
 
 Abrí tu navegador en:
