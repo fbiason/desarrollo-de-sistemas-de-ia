@@ -237,48 +237,184 @@ body {
 
 /* Dashboard Styles */
 .stat-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .stat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
 }
 
-.stat-card h3 {
-    font-size: 2rem;
+.stat-card:hover::before {
+    opacity: 1;
+}
+
+.stat-card h2 {
+    font-size: 2.5rem;
     font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.stat-card small {
-    font-size: 0.75rem;
+.stat-card p {
+    font-size: 0.85rem;
+    opacity: 0.95;
+    font-weight: 500;
+}
+
+.stat-card i {
     opacity: 0.9;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
 .chart-container {
     position: relative;
-    height: 250px;
-    padding: 10px;
+    height: 350px;
+    padding: 20px;
+    padding-bottom: 25px;
+    transition: transform 0.3s ease;
+}
+
+.chart-container:hover {
+    transform: translateY(-2px);
 }
 
 .chart-container canvas {
     max-height: 100%;
 }
 
+.chart-container h6 {
+    color: #444;
+    font-size: 0.95rem;
+    letter-spacing: 0.3px;
+}
+
+.table-hover tbody tr {
+    transition: all 0.2s ease;
+}
+
 .table-hover tbody tr:hover {
-    background-color: rgba(110, 142, 251, 0.05);
+    background-color: rgba(110, 142, 251, 0.08);
     cursor: pointer;
+    transform: scale(1.01);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .badge {
-    font-weight: 500;
-    padding: 0.4em 0.8em;
+    font-weight: 600;
+    padding: 0.5em 0.9em;
+    border-radius: 8px;
+    letter-spacing: 0.3px;
+}
+
+/* Result Card Improvements */
+.result-card {
+    display: block;
+}
+
+.result-card.show {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* Transiciones suaves para columnas */
+#expert-system-container {
+    transition: all 0.5s ease-in-out;
+}
+
+#form-column, #result-column {
+    transition: all 0.5s ease-in-out;
+}
+
+#result-column {
+    animation: slideInRight 0.5s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.result-header .icon-container {
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.result-content .alert {
+    transition: transform 0.3s ease;
+}
+
+.result-content .alert:hover {
+    transform: translateX(5px);
+}
+
+/* Card Enhancements */
+.card.shadow-lg {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1) !important;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.card.shadow-lg:hover {
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Button Enhancement */
+.btn-lg {
+    padding: 0.85rem 1.75rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.btn-lg:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(110, 142, 251, 0.6);
+}
+
+/* Table Improvements */
+.table thead th {
+    border-bottom: 2px solid #dee2e6;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    color: #555;
+}
+
+.table tbody td {
+    vertical-align: middle;
+    padding: 0.9rem 0.75rem;
 }
 
 /* Responsive adjustments for dashboard */
 @media (max-width: 991px) {
-    .col-lg-5, .col-lg-7 {
+    .col-lg-6 {
         margin-bottom: 1.5rem;
     }
     
@@ -287,16 +423,25 @@ body {
     }
     
     .chart-container {
-        height: 200px;
+        height: 240px;
     }
 }
 
 @media (max-width: 576px) {
-    .stat-card h3 {
-        font-size: 1.5rem;
+    .stat-card h2 {
+        font-size: 1.8rem;
     }
     
-    .stat-card small {
-        font-size: 0.65rem;
+    .stat-card p {
+        font-size: 0.75rem;
+    }
+    
+    .stat-card i {
+        font-size: 2rem !important;
+    }
+    
+    .chart-container {
+        height: 220px;
+        padding: 10px;
     }
 }

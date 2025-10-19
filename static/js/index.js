@@ -68,7 +68,10 @@ document.getElementById('diagnosis-form').addEventListener('submit', function(e)
     
     // Mostrar indicador de carga
     document.querySelector('.loading').style.display = 'block';
-    document.querySelector('.result-card').style.display = 'none';
+    
+    // Ocultar columna de resultados mientras carga
+    const resultColumn = document.getElementById('result-column');
+    resultColumn.classList.add('d-none');
     
     // Recopilar datos del formulario
     const problemType = document.getElementById('problem-type').value;
@@ -113,8 +116,22 @@ document.getElementById('diagnosis-form').addEventListener('submit', function(e)
         // Ocultar indicador de carga
         document.querySelector('.loading').style.display = 'none';
         
-        // Mostrar resultados
-        document.querySelector('.result-card').style.display = 'block';
+        // Expandir la card y mostrar resultados
+        const expertSystemContainer = document.getElementById('expert-system-container');
+        const formColumn = document.getElementById('form-column');
+        const resultColumn = document.getElementById('result-column');
+        
+        // Expandir el contenedor principal
+        expertSystemContainer.classList.remove('col-lg-6', 'col-xl-5');
+        expertSystemContainer.classList.add('col-lg-10', 'col-xl-9');
+        
+        // Cambiar el tamaño de las columnas
+        formColumn.classList.remove('col-lg-12');
+        formColumn.classList.add('col-lg-6');
+        
+        // Mostrar columna de resultados con animación
+        resultColumn.classList.remove('d-none');
+        resultColumn.classList.add('fade-in');
         
         // Actualizar contenido de resultados
         document.getElementById('diagnosis-title').textContent = 

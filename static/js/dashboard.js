@@ -1,5 +1,5 @@
 // Dashboard para visualización de diagnósticos
-let problemTypeChart, causeChart, confidenceChart;
+let problemTypeChart, confidenceChart;
 let diagnosisHistory = [];
 
 // Inicializar dashboard al cargar la página
@@ -31,30 +31,47 @@ function initializeCharts() {
         },
         options: {
             responsive: true,
-            maintainAspectRatio: true,
+            maintainAspectRatio: false,
+            layout: {
+                padding: {
+                    bottom: 10
+                }
+            },
             plugins: {
                 legend: {
                     position: 'bottom',
                     labels: {
-                        padding: 10,
+                        padding: 12,
                         font: {
-                            size: 11
-                        }
+                            size: 12
+                        },
+                        boxWidth: 15,
+                        boxHeight: 15,
+                        usePointStyle: false
                     }
                 }
             }
         }
     });
 
-    // Gráfico de Causas
-    const ctxCause = document.getElementById('causeChart').getContext('2d');
-    causeChart = new Chart(ctxCause, {
-        type: 'doughnut',
+    // Gráfico de Causas Identificadas (Barras)
+    const ctxConfidence = document.getElementById('confidenceChart').getContext('2d');
+    confidenceChart = new Chart(ctxConfidence, {
+        type: 'bar',
         data: {
             labels: ['Servidor', 'Navegador', 'Usuario', 'Red', 'Dispositivo', 'Permisos'],
             datasets: [{
+                label: 'Cantidad de Diagnósticos',
                 data: [0, 0, 0, 0, 0, 0],
                 backgroundColor: [
+                    'rgba(231, 76, 60, 0.8)',
+                    'rgba(52, 152, 219, 0.8)',
+                    'rgba(243, 156, 18, 0.8)',
+                    'rgba(155, 89, 182, 0.8)',
+                    'rgba(26, 188, 156, 0.8)',
+                    'rgba(52, 73, 94, 0.8)'
+                ],
+                borderColor: [
                     '#e74c3c',
                     '#3498db',
                     '#f39c12',
@@ -63,67 +80,54 @@ function initializeCharts() {
                     '#34495e'
                 ],
                 borderWidth: 2,
-                borderColor: '#fff'
+                borderRadius: 8
             }]
         },
         options: {
             responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        padding: 10,
-                        font: {
-                            size: 11
-                        }
-                    }
-                }
-            }
-        }
-    });
-
-    // Gráfico de Confianza Promedio
-    const ctxConfidence = document.getElementById('confidenceChart').getContext('2d');
-    confidenceChart = new Chart(ctxConfidence, {
-        type: 'bar',
-        data: {
-            labels: ['Login', 'Video', 'Chat', 'Contenido'],
-            datasets: [{
-                label: 'Confianza Promedio (%)',
-                data: [0, 0, 0, 0],
-                backgroundColor: [
-                    'rgba(13, 110, 253, 0.7)',
-                    'rgba(220, 53, 69, 0.7)',
-                    'rgba(255, 193, 7, 0.7)',
-                    'rgba(25, 135, 84, 0.7)'
-                ],
-                borderColor: [
-                    '#0d6efd',
-                    '#dc3545',
-                    '#ffc107',
-                    '#198754'
-                ],
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
+            maintainAspectRatio: false,
             scales: {
                 y: {
                     beginAtZero: true,
-                    max: 100,
                     ticks: {
-                        callback: function(value) {
-                            return value + '%';
+                        stepSize: 1,
+                        font: {
+                            size: 11
                         }
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        font: {
+                            size: 10
+                        }
+                    },
+                    grid: {
+                        display: false
                     }
                 }
             },
             plugins: {
                 legend: {
                     display: false
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    padding: 12,
+                    titleFont: {
+                        size: 13
+                    },
+                    bodyFont: {
+                        size: 12
+                    },
+                    callbacks: {
+                        label: function(context) {
+                            return 'Diagnósticos: ' + context.parsed.y;
+                        }
+                    }
                 }
             }
         }
@@ -222,8 +226,8 @@ function updateCharts() {
     ];
     problemTypeChart.update();
 
-    // Actualizar gráfico de causas
-    causeChart.data.datasets[0].data = [
+    // Actualizar gráfico de causas identificadas (barras)
+    confidenceChart.data.datasets[0].data = [
         causeCounts.server,
         causeCounts.browser,
         causeCounts.user,
@@ -231,17 +235,6 @@ function updateCharts() {
         causeCounts.device,
         causeCounts.permissions
     ];
-    causeChart.update();
-
-    // Calcular y actualizar confianza promedio
-    const avgConfidence = [
-        confidenceCount.login > 0 ? (confidenceSum.login / confidenceCount.login) * 100 : 0,
-        confidenceCount.video > 0 ? (confidenceSum.video / confidenceCount.video) * 100 : 0,
-        confidenceCount.chat > 0 ? (confidenceSum.chat / confidenceCount.chat) * 100 : 0,
-        confidenceCount.content > 0 ? (confidenceSum.content / confidenceCount.content) * 100 : 0
-    ];
-
-    confidenceChart.data.datasets[0].data = avgConfidence;
     confidenceChart.update();
 }
 
