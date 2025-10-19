@@ -115,15 +115,6 @@ El sistema incluye un dashboard interactivo que muestra:
 
 ---
 
-## 🧪 Pruebas
-
-Para ejecutar las pruebas:
-```bash
-pytest
-```
-
----
-
 ## 📖 Documentación Adicional
 
 Para entender cómo funciona el sistema experto internamente, consultá:
