@@ -2,11 +2,12 @@
 
 ## 📋 Índice
 1. [Arquitectura General](#arquitectura-general)
-2. [Componentes Principales](#componentes-principales)
-3. [Flujo de Ejecución](#flujo-de-ejecución)
-4. [Motor de Inferencia](#motor-de-inferencia)
-5. [Base de Conocimiento](#base-de-conocimiento)
-6. [Cálculo de Confianza](#cálculo-de-confianza)
+2. [Flask API - Capa de Presentación](#flask-api---capa-de-presentación)
+3. [Componentes Principales](#componentes-principales)
+4. [Flujo de Ejecución](#flujo-de-ejecución)
+5. [Motor de Inferencia](#motor-de-inferencia)
+6. [Base de Conocimiento](#base-de-conocimiento)
+7. [Cálculo de Confianza](#cálculo-de-confianza)
 
 ---
 
@@ -33,6 +34,147 @@ El sistema experto está construido sobre **Experta** (un motor de reglas basado
 │   - Base de Reglas (Rules)          │
 └─────────────────────────────────────┘
 ```
+
+---
+
+## 🌐 Flask API - Capa de Presentación
+
+Flask es el framework web que actúa como **puente entre el usuario y el sistema experto**. Proporciona una API REST que recibe peticiones HTTP y retorna diagnósticos en formato JSON.
+
+### Archivo Principal: `app.py`
+
+#### **Inicialización**
+```python
+from flask import Flask, request, jsonify, render_template
+from services.diagnosis_service import DiagnosisService
+
+app = Flask(__name__)
+```
+
+### **Endpoints Disponibles**
+
+#### 1. **GET /** - Interfaz Web
+```python
+@app.route("/")
+def index():
+    return render_template("index.html")
+```
+- **Función**: Sirve la página HTML con el formulario de diagnóstico
+- **Acceso**: `http://localhost:5000/`
+
+#### 2. **POST /api/diagnose** - Ejecutar Diagnóstico
+```python
+@app.post("/api/diagnose")
+def diagnose():
+    # 1. Recibir datos JSON
+    data = request.get_json()
+    
+    # 2. Validar entrada
+    if not data or "symptoms" not in data:
+        return jsonify({"error": "..."}), 400
+    
+    # 3. Validar navegador y conexión
+    if browser not in VALID_BROWSERS:
+        return jsonify({"error": "..."}), 400
+    
+    # 4. Ejecutar sistema experto
+    result = DiagnosisService.run(data, persist=True)
+    
+    # 5. Retornar diagnóstico
+    return jsonify(result), 200
+```
+
+**Entrada esperada:**
+```json
+{
+  "symptoms": [
+    {"type": "login", "description": "cannot_login", "severity": "high"}
+  ],
+  "system_info": {
+    "browser": "Chrome",
+    "connection_type": "wifi"
+  },
+  "server_status": {
+    "is_online": true
+  }
+}
+```
+
+**Salida:**
+```json
+{
+  "diagnosis": "login",
+  "cause": "browser",
+  "solution": "Estás usando Internet Explorer. Cambiá a Chrome...",
+  "confidence": 0.95
+}
+```
+
+#### 3. **GET /api/diagnosis** - Historial
+```python
+@app.get("/api/diagnosis")
+def get_history():
+    diagnosis_history = DiagnosisService.history()
+    return jsonify(diagnosis_history), 200
+```
+- **Función**: Retorna todos los diagnósticos previos
+- **Salida**: Lista de diagnósticos con timestamps
+
+### **Validaciones Implementadas**
+
+Flask valida los datos antes de pasarlos al sistema experto:
+
+```python
+VALID_BROWSERS = {"Chrome", "Firefox", "Edge", "Safari", "IE", "Other"}
+VALID_CONNECTIONS = {"wifi", "ethernet", "cellular", "slow_wifi"}
+```
+
+**Validaciones realizadas:**
+1. ✅ Presencia de campos obligatorios (`symptoms`)
+2. ✅ Tipo de datos correcto (lista de síntomas)
+3. ✅ Navegador válido
+4. ✅ Tipo de conexión válido
+
+**Respuestas de error:**
+- `400 Bad Request`: Datos inválidos o faltantes
+- `500 Internal Server Error`: Error en el sistema experto
+
+### **Flujo de una Petición**
+
+```
+Usuario → Frontend (JavaScript)
+              ↓
+         POST /api/diagnose
+              ↓
+         Flask recibe JSON
+              ↓
+         Validaciones (app.py)
+              ↓
+         DiagnosisService.run()
+              ↓
+         EdTechExpertSystem.diagnose()
+              ↓
+         Reglas evalúan hechos
+              ↓
+         Diagnosis generado
+              ↓
+         Flask retorna JSON
+              ↓
+         Frontend muestra resultado
+```
+
+### **Manejo de Errores**
+
+```python
+try:
+    result = DiagnosisService.run(data, persist=True)
+    return jsonify(result), 200
+except Exception as e:
+    app.logger.exception("Error en /api/diagnose")
+    return jsonify({"error": str(e)}), 500
+```
+
+Flask captura excepciones y retorna mensajes de error apropiados al cliente.
 
 ---
 
@@ -178,28 +320,37 @@ def diagnose(self, symptoms_data):
 ### Paso a Paso:
 
 ```
-1. Usuario completa el formulario web
+1. Usuario completa el formulario web (index.html)
    ↓
-2. JavaScript envía POST a /api/diagnose
+2. JavaScript envía POST a /api/diagnose con JSON
    ↓
-3. Flask recibe la solicitud en app.py
+3. Flask recibe la solicitud en app.py (endpoint diagnose())
    ↓
-4. DiagnosisService.run() procesa los datos
+4. Flask valida los datos de entrada:
+   - Campos obligatorios presentes
+   - Navegador válido
+   - Tipo de conexión válido
    ↓
-5. EdTechExpertSystem.diagnose() ejecuta:
+5. Flask llama a DiagnosisService.run(data, persist=True)
+   ↓
+6. DiagnosisService llama a EdTechExpertSystem.diagnose()
+   ↓
+7. EdTechExpertSystem ejecuta:
    a. Declara hechos (Symptom, SystemInfo, ServerStatus)
-   b. Motor de inferencia evalúa TODAS las reglas
+   b. Motor de inferencia (RETE) evalúa TODAS las reglas
    c. Reglas que coinciden declaran Diagnosis
    ↓
-6. Sistema recolecta todos los Diagnosis
+8. Sistema recolecta todos los Diagnosis generados
    ↓
-7. Selecciona el diagnóstico con mayor confianza
+9. Selecciona el diagnóstico con mayor confianza
    ↓
-8. Guarda en historial (HistoryService)
+10. DiagnosisService guarda en historial (HistoryService)
    ↓
-9. Retorna JSON con diagnóstico
+11. Flask convierte resultado a JSON con jsonify()
    ↓
-10. JavaScript muestra resultado en la interfaz
+12. Flask retorna HTTP 200 con el diagnóstico
+   ↓
+13. JavaScript recibe JSON y muestra resultado en la interfaz
 ```
 
 ### Ejemplo Concreto:
@@ -391,9 +542,33 @@ El sistema siempre retorna el diagnóstico con **mayor confianza**.
 ## 🚀 Conclusión
 
 Este sistema experto combina:
-- **Lógica declarativa** (reglas IF-THEN)
-- **Motor de inferencia** (algoritmo RETE)
-- **Base de conocimiento** (hechos + reglas)
-- **API REST** (integración con frontend)
+- **Flask API REST** (capa de presentación y comunicación HTTP)
+- **Lógica declarativa** (reglas IF-THEN basadas en CLIPS)
+- **Motor de inferencia RETE** (algoritmo eficiente de pattern matching)
+- **Base de conocimiento** (hechos + reglas organizadas por categoría)
+- **Validaciones robustas** (entrada, navegadores, conexiones)
+- **Persistencia de datos** (historial de diagnósticos)
 
-El resultado es un sistema **inteligente, mantenible y escalable** para diagnosticar problemas en plataformas educativas virtuales.
+### Ventajas de la Arquitectura:
+
+1. **Separación de responsabilidades**:
+   - Flask maneja HTTP y validaciones
+   - DiagnosisService coordina la lógica de negocio
+   - EdTechExpertSystem contiene el conocimiento experto
+
+2. **Escalabilidad**:
+   - Fácil agregar nuevos endpoints
+   - Fácil agregar nuevas reglas sin modificar Flask
+   - Soporta múltiples usuarios concurrentes
+
+3. **Mantenibilidad**:
+   - Código modular y bien comentado
+   - Reglas legibles y auditables
+   - Logs detallados para debugging
+
+4. **Extensibilidad**:
+   - API REST permite integración con otras aplicaciones
+   - Frontend puede ser reemplazado sin cambiar el backend
+   - Nuevas categorías de problemas se agregan fácilmente
+
+El resultado es un sistema **inteligente, mantenible y escalable** para diagnosticar problemas en plataformas educativas virtuales, accesible desde cualquier navegador web.

@@ -1,35 +1,35 @@
 from experta import Fact, Field
 
 class Symptom(Fact):
-    """Represents a symptom or problem reported by the user."""
-    type = Field(str, mandatory=True)  # Type of symptom (login, video, chat, etc.)
-    description = Field(str, mandatory=True)  # Detailed description
-    severity = Field(str, default="medium")  # low, medium, high
-    frequency = Field(str, default="sometimes")  # rarely, sometimes, always
+    """Representa un síntoma o problema reportado por el usuario."""
+    type = Field(str, mandatory=True)  # Tipo de síntoma (login, video, chat, etc.)
+    description = Field(str, mandatory=True)  # Descripción detallada
+    severity = Field(str, default="medium")  # bajo, medio, alto
+    frequency = Field(str, default="sometimes")  # raramente, a veces, siempre
     
 class SystemInfo(Fact):
-    """Information about the user's system."""
+    """Información sobre el sistema del usuario."""
     browser = Field(str, default=None)
     browser_version = Field(str, default=None)
     operating_system = Field(str, default=None)
-    device_type = Field(str, default=None)  # desktop, mobile, tablet
-    connection_type = Field(str, default=None)  # wifi, ethernet, cellular
+    device_type = Field(str, default=None)  # escritorio, móvil, tablet
+    connection_type = Field(str, default=None)  # wifi, ethernet, celular
     
 class ServerStatus(Fact):
-    """Information about the server status."""
+    """Información sobre el estado del servidor."""
     is_online = Field(bool, default=True)
-    response_time = Field(int, default=None)  # in milliseconds
-    last_maintenance = Field(str, default=None)  # date of last maintenance
-    reported_issues = Field(int, default=0)  # number of reported issues
+    response_time = Field(int, default=None)  # en milisegundos
+    last_maintenance = Field(str, default=None)  # fecha del último mantenimiento
+    reported_issues = Field(int, default=0)  # número de problemas reportados
     
 class Diagnosis(Fact):
-    """The result of the expert system's analysis."""
+    """El resultado del análisis del sistema experto."""
     problem_type = Field(str, mandatory=True)
     cause = Field(str, mandatory=True)
     solution = Field(str, mandatory=True)
-    confidence = Field(float, default=0.0)  # 0.0 to 1.0
+    confidence = Field(float, default=0.0)  # 0.0 a 1.0
 
-# Predefined symptoms that the system can recognize
+# Síntomas predefinidos que el sistema puede reconocer
 LOGIN_SYMPTOMS = [
     "cannot_login",
     "forgot_password",
@@ -62,7 +62,7 @@ CONTENT_SYMPTOMS = [
     "access_denied_to_content"
 ]
 
-# Causes categorized by source
+# Causas categorizadas por origen
 CAUSES = {
     "server": [
         "server_down",
